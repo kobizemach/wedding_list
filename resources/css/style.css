@@ -94,6 +94,6 @@ label{
 
 }
 
-.error_div{
+.error_div, #client_side_validator{
     width: 100%;
 }
