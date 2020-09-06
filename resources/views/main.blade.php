@@ -10,11 +10,17 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src='https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js'></script>   
         <meta id='csrf_token' name="csrf-token" content="{{ csrf_token() }}">
-
     </head>
     <body>
         <div class="container">
-            <h2 class='main_title'>Wedding Guests List</h2>
+            <div class='row'>
+                <div class='col-lg-8 col-sm-12'>
+                    <h2 class='main_title'>Wedding Guests List</h2>
+                </div>
+                <div class='col-lg-4 col-sm-12'>
+                    <button type='button' class='btn btn-info' id='client_side_validator' onclick='clientSideVal();'>Disable client side validation</button>
+                </div>
+            </div>
             <div class='inputs_div row'>
                 <div class='col-lg-2 col-sm-12'>
                     <label for="first_name">First Name</label>
