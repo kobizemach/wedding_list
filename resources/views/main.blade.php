@@ -48,8 +48,11 @@
                     </select>
                 </div>
                 <input type="hidden" class='form-control' id='edit_id'>
-                <button type='button' class='btn btn-success' id='create_btn' onclick='createNewGest();'>Create New Gest</button>
-                <button type='button' class='btn btn-primary' id='update_btn' onclick='updateGest();'>Update Gest</button>
+                <button type='button' class='btn btn-success' id='create_btn' onclick='createNewGest();' disabled>Create New Guest</button>
+                <button type='button' class='btn btn-primary' id='update_btn' onclick='updateGest();'>Update Guest</button>
+                <div class="error_div">
+                    
+                </div>
             </div> 
             <div class='search_div row'>
                 <label for="intend">Search For Guest</label>
