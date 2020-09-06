@@ -1,7 +1,6 @@
 $(document).ready(function(){
-
+    client_side_validator = 1;
     getAllGuests();
-
     var token = $('#csrf_token').attr('content');
     $('#intend, #gender').on('change', function(){
         $(this).attr('touched',true);
@@ -11,7 +10,6 @@ $(document).ready(function(){
         $(this).attr('touched',true);
         checkEvent();
     });
-
     $('#search').on('keyup',function(){
 
         var search = $(this).val();
@@ -58,16 +56,37 @@ $(document).ready(function(){
 
 });
 
+function clientSideVal(){
+    if(client_side_validator){
+        client_side_validator = 0;
+        $('#client_side_validator').html('Enable client side validation');
+        $('#client_side_validator').removeClass("btn-info");
+        $('#client_side_validator').addClass("btn-warning");
+        $('.error_div').html("");
+        checkEvent();
+    }else{
+        client_side_validator = 1;
+        $('#client_side_validator').html('Disable client side validation');
+        $('#client_side_validator').removeClass("btn-warning");
+        $('#client_side_validator').addClass("btn-info");
+        checkEvent();
+    }
+}
+
 function checkEvent(){
-    if(formValidation()){
-        var g = formValidation();
-        if(g.first_name != '' && g.last_name != '' && g.email != '' && g.phone != '' && g.gender != '' && g.intend != ''){
-            $("#create_btn, #update_btn").attr('disabled', false);
+    if(client_side_validator){
+        if(formValidation()){
+            var g = formValidation();
+            if(g.first_name != '' && g.last_name != '' && g.email != '' && g.phone != '' && g.gender != '' && g.intend != ''){
+                $("#create_btn, #update_btn").attr('disabled', false);
+            }else{
+                $("#create_btn, #update_btn").attr('disabled', true);
+            }
         }else{
             $("#create_btn, #update_btn").attr('disabled', true);
         }
     }else{
-        $("#create_btn, #update_btn").attr('disabled', true);
+        $("#create_btn, #update_btn").attr('disabled', false);
     }
 }
 
@@ -87,43 +106,36 @@ function createNewGest(){
 
     var token = $('#csrf_token').attr('content');
 
-    
+    var guest = {first_name:first_name,last_name:last_name,email:email,phone:phone,gender:gender,intend:intend};
 
-    //if(first_name && last_name && email && phone && gender){
+    $.ajax({
 
-         var guest = {first_name:first_name,last_name:last_name,email:email,phone:phone,gender:gender,intend:intend};
+        type: 'POST',
 
-        $.ajax({
+        cache: false,
 
-            type: 'POST',
+        headers: {'X-CSRF-TOKEN' : token}, 
 
-            cache: false,
+        url: "createNewGest",
 
-            headers: {'X-CSRF-TOKEN' : token}, 
+        data: guest,
 
-            url: "createNewGest",
-
-            data: guest,
-
-            success: function (data) {      
-                if(!data.res){
-                    buildErrorDiv(data);
-                }else{
-                    resetAll();
-                    getAllGuests();
-                }
-            },
-
-            error: function (xhr) {
-
-                console.log(xhr);
-
+        success: function (data) {      
+            if(!data.res){
+                buildErrorDiv(data);
+            }else{
+                resetAll();
+                getAllGuests();
             }
+        },
 
-        });
+        error: function (xhr) {
 
-    //}
+            console.log(xhr);
 
+        }
+
+    });
 }
 
 function buildErrorDiv(data){
@@ -234,6 +246,10 @@ function edit(guest_id){
 
                 $('#update_btn').show();
 
+                $('.error_div').html("");
+
+                $("#create_btn, #update_btn").attr('disabled', false);
+
             },
 
             error: function (xhr) {
@@ -316,8 +332,6 @@ function updateGest(){
 
     var guest = {id:guest_id,first_name:first_name,last_name:last_name,email:email,phone:phone,gender:gender,intend:intend};
 
-     //if(formValidation()){
-
         $.ajax({
 
             type: 'POST',
@@ -351,8 +365,6 @@ function updateGest(){
 
         });
 
-    //}
-
 }
 
 
@@ -378,6 +390,15 @@ function resetAll(){
 
     $('#update_btn').hide();
 
+    $('#first_name, #last_name, #email, #phone, #intend, #gender').attr('touched',false);
+
+    if(client_side_validator){
+        $("#create_btn, #update_btn").attr('disabled', true);
+    }else{
+        $("#create_btn, #update_btn").attr('disabled', false);
+    }
+    
+
 }
 
 function formValidation(){
@@ -390,27 +411,27 @@ function formValidation(){
 
     var err = "<div class='alert alert-danger'>";
     var check = 0;
-    if(first_name == "" && $('#first_name').attr('touched')){
+    if(first_name == "" && $('#first_name').attr('touched') == 'true'){
         err += "<div>first name: first name is required</div>";
         check = 1;
     }
-    if(last_name == "" && $('#last_name').attr('touched')){
+    if(last_name == "" && $('#last_name').attr('touched') == 'true'){
         err += "<div>last name: last name is required</div>";
         check = 1;
     }
-    if(!validateEmail(email) && $('#email').attr('touched')){
+    if(!validateEmail(email) && $('#email').attr('touched') == 'true'){
         err += "<div>last name: email is not valid</div>";
         check = 1;
     }
-    if(Number.isInteger(phone) && $('#phone').attr('touched')){
+    if(Number.isInteger(phone) && $('#phone').attr('touched') == 'true'){
         err += "<div>phone: phone is required</div>";
         check = 1;
     }
-    if(gender == "" && $('#gender').attr('touched')){
+    if(gender == "" && $('#gender').attr('touched') == 'true'){
         err += "<div>gender: gender is required</div>";
         check = 1;
     }
-    if(intend == "" && $('#intend').attr('touched')){
+    if(intend == "" && $('#intend').attr('touched') == 'true'){
         err += "<div>intend: intend is required</div>";
         check = 1;
     }
